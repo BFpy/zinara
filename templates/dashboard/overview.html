@@ -1,0 +1,246 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Zinara System{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="fas fa-tachometer-alt"></i> Dashboard Overview</h2>
+        <p class="text-muted">Real-time vehicle licensing compliance monitoring</p>
+    </div>
+</div>
+
+<!-- Key Metrics -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">{{ total_vehicles }}</h5>
+                        <p class="card-text">Total Vehicles</p>
+                    </div>
+                    <i class="fas fa-car fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">{{ licensed_vehicles }}</h5>
+                        <p class="card-text">Licensed</p>
+                    </div>
+                    <i class="fas fa-check-circle fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">{{ unlicensed_vehicles }}</h5>
+                        <p class="card-text">Unlicensed</p>
+                    </div>
+                    <i class="fas fa-exclamation-triangle fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-danger text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">{{ high_risk_vehicles }}</h5>
+                        <p class="card-text">High Risk</p>
+                    </div>
+                    <i class="fas fa-exclamation-circle fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Compliance Rate -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Compliance Rate</h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center">
+                    <div class="progress mb-3" style="height: 30px;">
+                        <div class="progress-bar bg-success" role="progressbar" 
+                             style="width: {{ compliance_rate }}%" 
+                             aria-valuenow="{{ compliance_rate }}" aria-valuemin="0" aria-valuemax="100">
+                            {{ compliance_rate }}%
+                        </div>
+                    </div>
+                    <p class="text-muted">{{ licensed_vehicles }} of {{ total_vehicles }} vehicles are compliant</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Recent Alerts</h5>
+            </div>
+            <div class="card-body">
+                {% if alerts %}
+                    {% for alert in alerts %}
+                        <div class="alert alert-{% if alert.severity == 'critical' %}danger{% elif alert.severity == 'high' %}warning{% else %}info{% endif %}">
+                            <strong>{{ alert.title }}</strong>
+                            <p class="mb-0">{{ alert.message }}</p>
+                            <small class="text-muted">{{ alert.created_at|date:"M d, H:i" }}</small>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No recent alerts</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Regional Distribution</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="regionalChart" width="400" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Vehicle Types</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="vehicleTypeChart" width="400" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Predictions -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>Recent ML Predictions</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_predictions %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Vehicle ID</th>
+                                    <th>Type</th>
+                                    <th>Risk Score</th>
+                                    <th>Prediction</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for prediction in recent_predictions %}
+                                    <tr>
+                                        <td>{{ prediction.vehicle.vehicle_id }}</td>
+                                        <td>{{ prediction.vehicle.vehicle_type }}</td>
+                                        <td>
+                                            <span class="badge bg-{% if prediction.risk_score > 0.7 %}danger{% elif prediction.risk_score > 0.4 %}warning{% else %}success{% endif %}">
+                                                {{ prediction.risk_score|floatformat:2 }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-{% if prediction.predicted_unlicensed %}danger{% else %}success{% endif %}">
+                                                {% if prediction.predicted_unlicensed %}High Risk{% else %}Low Risk{% endif %}
+                                            </span>
+                                        </td>
+                                        <td>{{ prediction.prediction_date|date:"M d, H:i" }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">No recent predictions available</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Regional Chart
+    const regionalCtx = document.getElementById('regionalChart').getContext('2d');
+    const regionalData = {{ regional_stats|safe }};
+    
+    new Chart(regionalCtx, {
+        type: 'bar',
+        data: {
+            labels: regionalData.map(item => item.region),
+            datasets: [{
+                label: 'Licensed',
+                data: regionalData.map(item => item.licensed),
+                backgroundColor: 'rgba(40, 167, 69, 0.8)',
+            }, {
+                label: 'Unlicensed',
+                data: regionalData.map(item => item.unlicensed),
+                backgroundColor: 'rgba(220, 53, 69, 0.8)',
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: { stacked: true },
+                y: { stacked: true }
+            }
+        }
+    });
+    
+    // Vehicle Type Chart
+    const vehicleTypeCtx = document.getElementById('vehicleTypeChart').getContext('2d');
+    const vehicleTypeData = {{ vehicle_type_stats|safe }};
+    
+    new Chart(vehicleTypeCtx, {
+        type: 'doughnut',
+        data: {
+            labels: vehicleTypeData.map(item => item.vehicle_type),
+            datasets: [{
+                data: vehicleTypeData.map(item => item.total),
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.8)',
+                    'rgba(54, 162, 235, 0.8)',
+                    'rgba(255, 205, 86, 0.8)',
+                    'rgba(75, 192, 192, 0.8)',
+                    'rgba(153, 102, 255, 0.8)',
+                ]
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
+});
+</script>
+{% endblock %}

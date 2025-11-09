@@ -1,0 +1,295 @@
+# ZINARA Vehicle Licensing Dataset - Column Descriptions
+
+## Overview
+This dataset contains vehicle licensing information from the Zimbabwe National Road Administration (ZINARA) system. The data is used to predict vehicle license compliance patterns and identify vehicles at high risk of being unlicensed. The dataset spans multiple years (2015-2024) and covers various regions across Zimbabwe.
+
+## Data Collection Methodology
+- **Source**: ZINARA licensing database
+- **Time Period**: 2015-2024 (9 years of data)
+- **Geographic Coverage**: All provinces in Zimbabwe (urban, peri-urban, rural areas)
+- **Update Frequency**: Real-time data synchronization from agent terminals and online platforms
+
+## Column Descriptions
+
+### 1. vehicle_id (String/Integer)
+**Description**: Unique identifier for each vehicle in the system
+**Data Type**: String or Integer
+**Relevance**: Primary key for vehicle identification and tracking
+**Business Impact**: Essential for linking records across different systems and preventing duplicates
+**Example**: "ABC123", "123456789"
+
+### 2. vehicle_type (String - Categorical)
+**Description**: Classification of vehicle type (sedan, SUV, truck, motorcycle, bus, other)
+**Data Type**: String
+**Categories**:
+- sedan: Passenger cars
+- suv: Sport Utility Vehicles
+- truck: Commercial trucks and pickups
+- motorcycle: Two-wheeled vehicles
+- bus: Public transport vehicles
+- other: Specialized vehicles
+**Relevance**: Different vehicle types have different compliance patterns and renewal frequencies
+**Business Impact**: Used for risk stratification and targeted enforcement
+
+### 3. registration_date (Date)
+**Description**: Date when the vehicle was first registered with ZINARA
+**Data Type**: Date (YYYY-MM-DD)
+**Relevance**: Determines vehicle age and historical compliance patterns
+**Business Impact**: Older vehicles may have different renewal behaviors than newer ones
+**Validation**: Must be before current date
+
+### 4. region (String - Categorical)
+**Description**: Geographic region where the vehicle is primarily operated
+**Data Type**: String
+**Categories**:
+- urban: Major cities (Harare, Bulawayo)
+- peri_urban: Suburban areas around major cities
+- rural: Rural districts and farming areas
+**Relevance**: Regional differences affect access to licensing services and enforcement
+**Business Impact**: Rural areas have lower compliance rates due to limited agent access
+
+### 5. last_license_renewal (Date)
+**Description**: Date of the most recent license renewal payment
+**Data Type**: Date (YYYY-MM-DD)
+**Relevance**: Key indicator of current licensing status
+**Business Impact**: Vehicles with very old renewal dates are likely unlicensed
+**Validation**: Must be before or equal to current date
+
+### 6. is_licensed (Boolean)
+**Description**: Current licensing status (True = licensed, False = unlicensed)
+**Data Type**: Boolean
+**Relevance**: Target variable for compliance prediction models
+**Business Impact**: Primary metric for measuring compliance rates
+**Distribution**: Expected to be imbalanced (70-80% licensed, 20-30% unlicensed)
+
+### 7. license_expiry_date (Date)
+**Description**: Date when the current license expires
+**Data Type**: Date (YYYY-MM-DD)
+**Relevance**: Determines if license is currently valid
+**Business Impact**: Vehicles with expired licenses are non-compliant
+**Calculation**: Usually last_renewal_date + 1 year
+
+### 8. payment_mode (String - Categorical)
+**Description**: Method used for license renewal payments
+**Data Type**: String
+**Categories**:
+- online: Direct online payments through ZINARA portal
+- mobile_money: Mobile money platforms (EcoCash, OneMoney)
+- agent: Physical agent offices
+- cash: Cash payments at agent locations
+**Relevance**: Payment method indicates digital adoption and service accessibility
+**Business Impact**: Online payments correlate with higher compliance rates
+
+### 9. total_renewals (Integer)
+**Description**: Total number of license renewals completed for this vehicle
+**Data Type**: Integer
+**Range**: 0 to 50+ (depending on vehicle age)
+**Relevance**: Indicates renewal history and vehicle usage patterns
+**Business Impact**: Vehicles with many renewals show consistent compliance behavior
+
+### 10. late_renewals_count (Integer)
+**Description**: Number of times the vehicle was renewed after the due date
+**Data Type**: Integer
+**Range**: 0 to total_renewals
+**Relevance**: Measures punctuality in license renewals
+**Business Impact**: High late renewal counts indicate risk-taking behavior
+
+### 11. average_renewal_delay (Float)
+**Description**: Average number of days late for renewals (in days)
+**Data Type**: Float
+**Range**: 0 to 365+ days
+**Relevance**: Quantifies how late renewals typically are
+**Business Impact**: Higher delays indicate lower compliance priority
+
+### 12. agent_sync_delay (Float)
+**Description**: Average delay in data synchronization from agent terminals (in hours)
+**Data Type**: Float
+**Range**: 0 to 168+ hours (1 week)
+**Relevance**: Measures efficiency of agent network and data systems
+**Business Impact**: High delays may indicate system issues affecting compliance
+
+### 13. online_platform_last_login (DateTime)
+**Description**: Last time the vehicle owner accessed the online portal
+**Data Type**: DateTime (YYYY-MM-DD HH:MM:SS)
+**Relevance**: Indicates digital engagement level
+**Business Impact**: Active online users are more likely to be compliant
+**Note**: Only populated for online/mobile_money payment modes
+
+## Derived Features (Engineered)
+
+### 14. days_since_renewal (Integer - Derived)
+**Description**: Days since last license renewal
+**Calculation**: current_date - last_license_renewal
+**Relevance**: Time-based risk indicator
+**Business Impact**: Critical feature for predicting current compliance status
+
+### 15. vehicle_age_years (Float - Derived)
+**Description**: Age of vehicle in years
+**Calculation**: (current_date - registration_date) / 365.25
+**Relevance**: Older vehicles may have different compliance patterns
+**Business Impact**: Used in risk stratification models
+
+### 16. renewal_frequency (Float - Derived)
+**Description**: Average renewals per year of vehicle life
+**Calculation**: total_renewals / vehicle_age_years
+**Relevance**: Measures consistency of renewal behavior
+**Business Impact**: High frequency indicates good compliance habits
+
+### 17. late_renewal_rate (Float - Derived)
+**Description**: Proportion of renewals that were late
+**Calculation**: late_renewals_count / (total_renewals + 1)
+**Relevance**: Risk indicator based on punctuality
+**Business Impact**: Higher rates indicate higher risk of non-compliance
+
+### 18. payment_digital_score (Float - Derived)
+**Description**: Digital adoption score based on payment method
+**Mapping**:
+- online: 1.0 (highest digital adoption)
+- mobile_money: 0.8
+- agent: 0.4
+- cash: 0.0 (lowest digital adoption)
+**Relevance**: Measures technology adoption level
+**Business Impact**: Digital users show higher compliance rates
+
+### 19. region_risk_score (Float - Derived)
+**Description**: Risk score based on regional characteristics
+**Mapping**:
+- urban: 0.3 (lowest risk - better enforcement)
+- peri_urban: 0.5 (medium risk)
+- rural: 0.7 (highest risk - limited access)
+**Relevance**: Geographic risk stratification
+**Business Impact**: Rural vehicles need more targeted interventions
+
+### 20. agent_efficiency (Float - Derived)
+**Description**: Agent network efficiency score
+**Calculation**: 1 - (agent_sync_delay / max_delay)
+**Relevance**: Measures service delivery effectiveness
+**Business Impact**: Poor agent efficiency correlates with lower compliance
+
+### 21. compliance_score (Float - Derived)
+**Description**: Composite compliance score
+**Calculation**: renewal_frequency * (1 - late_renewal_rate)
+**Relevance**: Overall compliance health score
+**Business Impact**: Primary risk indicator combining multiple factors
+
+### 22. renewal_month (Integer - Derived)
+**Description**: Month of last renewal (1-12)
+**Calculation**: Extract month from last_license_renewal
+**Relevance**: Seasonal patterns in renewal behavior
+**Business Impact**: Some months show higher compliance rates
+
+### 23. renewal_quarter (Integer - Derived)
+**Description**: Quarter of last renewal (1-4)
+**Calculation**: Extract quarter from last_license_renewal
+**Relevance**: Quarterly compliance patterns
+**Business Impact**: Q4 often shows higher renewal activity
+
+### 24. age_region_risk (Float - Derived)
+**Description**: Interaction between vehicle age and regional risk
+**Calculation**: vehicle_age_years * region_risk_score
+**Relevance**: Combined age and location risk factors
+**Business Impact**: Older rural vehicles are highest risk
+
+### 25. payment_region_mismatch (Float - Derived)
+**Description**: Mismatch between payment method and regional infrastructure
+**Calculation**: region_risk_score - payment_digital_score
+**Relevance**: Identifies vehicles using inappropriate payment methods for their location
+**Business Impact**: High mismatch indicates potential access barriers
+
+### 26. compliance_trajectory (Float - Derived)
+**Description**: Recent renewal behavior weighted by historical patterns
+**Calculation**: (days_since_renewal / 365) * late_renewal_rate
+**Relevance**: Combines recency and historical behavior
+**Business Impact**: Predicts short-term compliance likelihood
+
+## Data Quality Considerations
+
+### Missing Values Strategy
+- **online_platform_last_login**: Expected missing for non-online payments
+- **agent_sync_delay**: Set to 0 for non-agent payments
+- **Dates**: Converted to datetime, invalid dates become NaT
+- **Numeric fields**: Filled with median values where appropriate
+
+### Outlier Handling
+- **IQR Method**: Used for most numeric columns
+- **Business Logic**: Preserved for payment modes and regional data
+- **Date Validation**: Impossible dates removed
+
+### Data Integrity Rules
+1. late_renewals_count ≤ total_renewals
+2. registration_date ≤ current_date
+3. last_license_renewal ≤ current_date
+4. license_expiry_date ≥ last_license_renewal
+5. agent_sync_delay = 0 for non-agent payments
+
+## Business Rules and Constraints
+
+### Licensing Logic
+- Licenses are valid for 1 year from renewal date
+- Renewals can be made up to 6 months after expiry (grace period)
+- Vehicles over 6 months expired are considered non-compliant
+
+### Payment Processing
+- Online payments processed immediately
+- Mobile money payments confirmed within 24 hours
+- Agent payments may have synchronization delays
+- Cash payments require manual processing
+
+### Regional Considerations
+- Urban areas: High enforcement, easy access to services
+- Peri-urban: Moderate enforcement, variable access
+- Rural areas: Limited enforcement, few agent locations
+
+## Model Target Definition
+
+### Compliance Status (is_licensed)
+- **True (Compliant)**: License renewed within last 12 months
+- **False (Non-compliant)**: No renewal in last 12 months
+- **Edge Cases**: Vehicles in grace period (6 months expired) may be considered compliant
+
+### Risk Scoring
+- **Low Risk**: Recently renewed, good payment history
+- **Medium Risk**: Moderate renewal delays, mixed history
+- **High Risk**: Long overdue, poor compliance history
+
+## Usage in Machine Learning Models
+
+### Feature Selection Strategy
+1. **Time-based features**: days_since_renewal, vehicle_age_years
+2. **Behavioral features**: renewal_frequency, late_renewal_rate, compliance_score
+3. **Digital adoption**: payment_digital_score, agent_efficiency
+4. **Geographic factors**: region_risk_score, regional compliance rates
+5. **Interaction features**: age_region_risk, payment_region_mismatch
+
+### Target Engineering
+- **Binary Classification**: Predict current compliance status
+- **Risk Scoring**: Continuous probability of being unlicensed
+- **Multi-class**: Low/Medium/High risk categories
+
+### Model Evaluation Metrics
+- **Primary**: F1-Score (balances precision and recall for imbalanced data)
+- **Secondary**: ROC-AUC, Precision, Recall
+- **Business**: Compliance rate improvement, false positive reduction
+
+## Data Update Frequency
+- **Real-time**: Online payments and mobile money transactions
+- **Daily**: Agent terminal synchronizations
+- **Weekly**: Batch updates from rural areas
+- **Monthly**: Historical data reconciliation
+
+## Privacy and Security Considerations
+- **Anonymization**: Vehicle IDs are hashed for external analysis
+- **PII Protection**: Owner information not included in analytical datasets
+- **Access Control**: Data access restricted by role and clearance level
+- **Audit Trail**: All data access logged for compliance monitoring
+
+## Future Enhancements
+1. **Additional Features**: Vehicle value, engine size, usage patterns
+2. **External Data**: Economic indicators, fuel prices, weather data
+3. **Real-time Features**: GPS tracking, payment attempt logs
+4. **Behavioral Features**: Login frequency, portal usage patterns
+
+---
+*Document Version: 1.0*
+*Last Updated: November 2024*
+*Prepared for: ZINARA ML Compliance Prediction Project*

@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Zinara Vehicle Licensing System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="jumbotron bg-primary text-white rounded p-5 mb-4">
+            <h1 class="display-4">Welcome to Zinara Vehicle Licensing System</h1>
+            <p class="lead">Advanced vehicle license compliance monitoring with AI-powered predictions</p>
+            {% if not user.is_authenticated %}
+                <a href="{% url 'core:login' %}" class="btn btn-light btn-lg">
+                    <i class="fas fa-sign-in-alt"></i> Login to Dashboard
+                </a>
+            {% else %}
+                <a href="{% url 'dashboard:overview' %}" class="btn btn-light btn-lg">
+                    <i class="fas fa-tachometer-alt"></i> Go to Dashboard
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-car fa-3x text-primary mb-3"></i>
+                <h5 class="card-title">Vehicle Management</h5>
+                <p class="card-text">Comprehensive vehicle registration and licensing information management</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-brain fa-3x text-success mb-3"></i>
+                <h5 class="card-title">AI Predictions</h5>
+                <p class="card-text">Machine learning models predict license renewal compliance and identify high-risk vehicles</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-chart-bar fa-3x text-info mb-3"></i>
+                <h5 class="card-title">Analytics & Reporting</h5>
+                <p class="card-text">Real-time analytics and comprehensive reporting for informed decision making</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if not user.is_authenticated %}
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>System Statistics</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <h2 class="text-primary">{{ total_vehicles|default:0 }}</h2>
+                        <p>Total Vehicles</p>
+                    </div>
+                    <div class="col-md-3">
+                        <h2 class="text-success">{{ licensed_vehicles|default:0 }}</h2>
+                        <p>Licensed Vehicles</p>
+                    </div>
+                    <div class="col-md-3">
+                        <h2 class="text-warning">{{ unlicensed_vehicles|default:0 }}</h2>
+                        <p>Unlicensed Vehicles</p>
+                    </div>
+                    <div class="col-md-3">
+                        <h2 class="text-info">{{ compliance_rate|default:0 }}%</h2>
+                        <p>Compliance Rate</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>Key Features</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-check-circle text-success"></i> Predictive Analytics</h6>
+                        <p>Identify vehicles likely to become unlicensed using advanced ML algorithms</p>
+                        
+                        <h6><i class="fas fa-check-circle text-success"></i> Real-time Monitoring</h6>
+                        <p>Continuous monitoring of license status and renewal patterns</p>
+                        
+                        <h6><i class="fas fa-check-circle text-success"></i> Regional Insights</h6>
+                        <p>Detailed analytics by region, vehicle type, and payment methods</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-check-circle text-success"></i> Alert System</h6>
+                        <p>Automated alerts for high-risk vehicles and compliance issues</p>
+                        
+                        <h6><i class="fas fa-check-circle text-success"></i> API Integration</h6>
+                        <p>RESTful API for integration with external systems</p>
+                        
+                        <h6><i class="fas fa-check-circle text-success"></i> Data Security</h6>
+                        <p>Secure data handling with role-based access control</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
