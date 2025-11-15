@@ -29,11 +29,13 @@ class MLModel(models.Model):
     recall = models.FloatField(null=True, blank=True)
     f1_score = models.FloatField(null=True, blank=True)
     roc_auc = models.FloatField(null=True, blank=True)
+    threshold = models.FloatField(null=True, blank=True, help_text="Optimal threshold for predictions")
     
     # Training information
     training_data_size = models.IntegerField(null=True, blank=True)
     feature_importance = models.JSONField(null=True, blank=True)
     hyperparameters = models.JSONField(null=True, blank=True)
+    confusion_matrix = models.JSONField(null=True, blank=True, help_text="Confusion matrix: [[TN, FP], [FN, TP]]")
     
     # Metadata
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)

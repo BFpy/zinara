@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block title %}Upload & Analyze - Zinara System{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Fixed size for chart cards - no growing */
+    .equal-card {
+        height: 400px !important;
+        max-height: 400px !important;
+        overflow: hidden;
+    }
+    .chart-container {
+        height: 280px !important;
+        max-height: 280px !important;
+        flex-shrink: 0;
+    }
+    .equal-card .card-body {
+        overflow: hidden;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+	<div class="col-12">
+		<h2><i class="fas fa-file-upload text-primary"></i> Upload & Analyze</h2>
+		<p class="text-muted">Upload a CSV or Excel dataset to analyze risk using the active model</p>
+	</div>
+</div>
+
+{% if error %}
+<div class="alert alert-danger"><i class="fas fa-exclamation-circle"></i> {{ error }}</div>
+{% endif %}
+
+<div class="card mb-4">
+	<div class="card-header"><strong>Upload Dataset</strong></div>
+	<div class="card-body">
+		<form method="post" enctype="multipart/form-data" class="row g-3">
+			{% csrf_token %}
+			<div class="col-md-8">
+				<input type="file" name="file" accept=".csv,.xlsx,.xls" class="form-control" required>
+				<small class="text-muted">Supported formats: CSV, XLSX, XLS</small>
+			</div>
+			<div class="col-md-4">
+				<button class="btn btn-primary w-100" type="submit"><i class="fas fa-upload me-1"></i> Analyze</button>
+			</div>
+		</form>
+	</div>
+</div>
+
+{% if has_result %}
+<!-- Summary -->
+<div class="row g-4 mb-4">
+	<div class="col-md-3"><div class="stat-card text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"><div class="d-flex justify-content-between align-items-center"><div><h3 class="mb-2">{{ total_vehicles }}</h3><p class="mb-0 opacity-90"><i class="fas fa-car me-2"></i>Total Vehicles</p></div><div class="stat-icon"><i class="fas fa-car fa-3x opacity-50"></i></div></div></div></div>
+	<div class="col-md-3"><div class="stat-card text-white" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);"><div class="d-flex justify-content-between align-items-center"><div><h3 class="mb-2">{{ high_risk_count }}</h3><p class="mb-0 opacity-90"><i class="fas fa-exclamation-triangle me-2"></i>High Risk</p></div><div class="stat-icon"><i class="fas fa-exclamation-triangle fa-3x opacity-50"></i></div></div></div></div>
+	<div class="col-md-3"><div class="stat-card text-white" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"><div class="d-flex justify-content-between align-items-center"><div><h3 class="mb-2">{{ medium_risk_count }}</h3><p class="mb-0 opacity-90"><i class="fas fa-exclamation-circle me-2"></i>Medium Risk</p></div><div class="stat-icon"><i class="fas fa-exclamation-circle fa-3x opacity-50"></i></div></div></div></div>
+	<div class="col-md-3"><div class="stat-card text-white" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);"><div class="d-flex justify-content-between align-items-center"><div><h3 class="mb-2">{{ low_risk_count }}</h3><p class="mb-0 opacity-90"><i class="fas fa-check-circle me-2"></i>Low Risk</p></div><div class="stat-icon"><i class="fas fa-check-circle fa-3x opacity-50"></i></div></div></div></div>
+</div>
+
+<!-- Charts -->
+<div class="row mb-4 g-4">
+	<div class="col-md-6 d-flex">
+		<div class="card equal-card w-100"><div class="card-header"><strong>Risk Distribution</strong></div><div class="card-body"><div class="chart-container"><canvas id="riskDistributionChart" height="280"></canvas></div></div></div>
+	</div>
+	<div class="col-md-6 d-flex">
+		<div class="card equal-card w-100"><div class="card-header"><strong>Average Risk by Region</strong></div><div class="card-body"><div class="chart-container"><canvas id="regionalRiskChart" height="280"></canvas></div></div></div>
+	</div>
+</div>
+
+<div class="row mb-4 g-4">
+	<div class="col-12 d-flex">
+		<div class="card equal-card w-100"><div class="card-header"><strong>Risk by Vehicle Type</strong></div><div class="card-body"><div class="chart-container"><canvas id="vehicleTypeRiskChart" height="280"></canvas></div></div></div>
+	</div>
+</div>
+
+<div class="row mb-4 g-4">
+	<div class="col-12 d-flex">
+		<div class="card equal-card w-100"><div class="card-header"><strong>Risk by Payment Mode</strong></div><div class="card-body"><div class="chart-container"><canvas id="paymentModeChart" height="280"></canvas></div></div></div>
+	</div>
+</div>
+
+<!-- Top High-Risk Vehicles -->
+<div class="row">
+	<div class="col-12">
+		<div class="card">
+			<div class="card-header bg-danger text-white"><strong><i class="fas fa-exclamation-triangle"></i> Top High-Risk Vehicles</strong></div>
+			<div class="card-body">
+				<div class="table-responsive">
+					<table class="table table-striped">
+						<thead><tr><th>Vehicle ID</th><th>Type</th><th>Region</th><th>Risk Score</th><th>Prediction</th></tr></thead>
+						<tbody>
+							{% for v in high_risk_vehicles %}
+							<tr>
+								<td>{{ v.vehicle_id|default:"N/A" }}</td>
+								<td>{{ v.vehicle_type|default:"N/A" }}</td>
+								<td>{{ v.region|default:"N/A" }}</td>
+								<td><span class="badge bg-{% if v.risk_score > 0.7 %}danger{% elif v.risk_score > 0.4 %}warning{% else %}success{% endif %}">{{ v.risk_score|floatformat:3 }}</span></td>
+								<td>{% if v.predicted_unlicensed %}<span class="badge bg-danger">High</span>{% else %}<span class="badge bg-success">Low</span>{% endif %}</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+	{% if has_result %}
+	const riskDistData = {{ risk_distribution|safe }};
+	const r1 = document.getElementById('riskDistributionChart').getContext('2d');
+	new Chart(r1, { type: 'doughnut', data: { labels: ['Low','Medium','High'], datasets:[{ data: [riskDistData.low, riskDistData.medium, riskDistData.high], backgroundColor:['#28a745','#ffc107','#dc3545'] }] }, options:{ responsive:true, maintainAspectRatio: false, plugins:{ legend:{ position:'bottom' }}} });
+
+	const regionalData = {{ regional_analysis|safe }};
+	const r2 = document.getElementById('regionalRiskChart').getContext('2d');
+	new Chart(r2, { type: 'bar', data: { labels: regionalData.map(r=>r.region||'Unknown'), datasets:[{ label:'Avg Risk', data: regionalData.map(r=>r.avg_risk||0), backgroundColor:'#0d6efd' }]}, options:{ responsive:true, maintainAspectRatio: false, scales:{ y:{ beginAtZero:true, max:1 }}} });
+
+	const typeData = {{ vehicle_type_analysis|safe }};
+	const r3 = document.getElementById('vehicleTypeRiskChart').getContext('2d');
+	new Chart(r3, { type: 'bar', data: { labels: typeData.map(v=>v.vehicle_type||'Unknown'), datasets:[{ label:'Avg Risk', data: typeData.map(v=>v.avg_risk||0), backgroundColor:'#f5576c' }]}, options:{ responsive:true, maintainAspectRatio: false, scales:{ y:{ beginAtZero:true, max:1 }}} });
+
+	const paymentData = {{ payment_analysis|safe }};
+	const r4 = document.getElementById('paymentModeChart').getContext('2d');
+	new Chart(r4, { type: 'bar', data: { labels: paymentData.map(p=>p.payment_mode||'Unknown'), datasets:[{ label:'Avg Risk', data: paymentData.map(p=>p.avg_risk||0), backgroundColor:'#20c997' }]}, options:{ responsive:true, maintainAspectRatio: false, scales:{ y:{ beginAtZero:true, max:1 }}} });
+	{% endif %}
+});
+</script>
+{% endblock %}
+

@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}Analytics - Zinara System{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Fixed size for chart cards - no growing */
+    .equal-card {
+        height: 400px !important;
+        max-height: 400px !important;
+        overflow: hidden;
+    }
+    .chart-container {
+        height: 280px !important;
+        max-height: 280px !important;
+        flex-shrink: 0;
+    }
+    .equal-card .card-body {
+        overflow: hidden;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+	<div class="col-12">
+		<h3><i class="fas fa-chart-line"></i> Analytics</h3>
+		<p class="text-muted">Trends and performance insights</p>
+	</div>
+</div>
+
+<div class="row mb-4 g-4">
+	<div class="col-md-8 d-flex">
+		<div class="card equal-card w-100">
+			<div class="card-header"><strong>Daily Predictions (last 30 days)</strong></div>
+			<div class="card-body">
+				<div class="chart-container">
+					<canvas id="dailyPredChart" height="280"></canvas>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-4 d-flex">
+		<div class="card equal-card w-100">
+			<div class="card-header"><strong>Payment Mode Effectiveness</strong></div>
+			<div class="card-body">
+				<div class="chart-container">
+					<canvas id="paymentModeChart" height="280"></canvas>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+	const daily = {{ daily_predictions|safe }};
+	const ctx1 = document.getElementById('dailyPredChart').getContext('2d');
+	new Chart(ctx1, {
+		type: 'line',
+		data: {
+			labels: daily.map(d => d.day),
+			datasets: [
+				{ label: 'Total', data: daily.map(d => d.total), borderColor: '#0d6efd', tension: 0.3 },
+				{ label: 'High Risk', data: daily.map(d => d.high_risk), borderColor: '#dc3545', tension: 0.3 }
+			]
+		},
+		options: { 
+			responsive: true, 
+			maintainAspectRatio: false,
+			plugins: { legend: { position: 'bottom' } } 
+		}
+	});
+
+	const pm = {{ payment_mode_stats|safe }};
+	const ctx2 = document.getElementById('paymentModeChart').getContext('2d');
+	new Chart(ctx2, {
+		type: 'bar',
+		data: {
+			labels: pm.map(p => p.preferred_payment_mode),
+			datasets: [
+				{ label: 'Avg Delay', data: pm.map(p => p.avg_delay), backgroundColor: 'rgba(255, 193, 7, 0.8)' },
+				{ label: 'Compliance Rate', data: pm.map(p => p.compliance_rate), backgroundColor: 'rgba(25, 135, 84, 0.8)' }
+			]
+		},
+		options: { 
+			responsive: true, 
+			maintainAspectRatio: false,
+			plugins: { legend: { position: 'bottom' } } 
+		}
+	});
+});
+</script>
+{% endblock %}
+

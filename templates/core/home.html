@@ -1,82 +1,171 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Home - Zinara Vehicle Licensing System{% endblock %}
 
+{% block extra_head %}
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%);
+        padding: 5rem 2rem;
+        border-radius: 20px;
+        margin-bottom: 4rem;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .feature-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        font-size: 2.5rem;
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+    }
+    
+    .stats-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+    
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    
+    .stats-number {
+        font-size: 3rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="row">
-    <div class="col-12">
-        <div class="jumbotron bg-primary text-white rounded p-5 mb-4">
-            <h1 class="display-4">Welcome to Zinara Vehicle Licensing System</h1>
-            <p class="lead">Advanced vehicle license compliance monitoring with AI-powered predictions</p>
-            {% if not user.is_authenticated %}
-                <a href="{% url 'core:login' %}" class="btn btn-light btn-lg">
-                    <i class="fas fa-sign-in-alt"></i> Login to Dashboard
-                </a>
-            {% else %}
-                <a href="{% url 'dashboard:overview' %}" class="btn btn-light btn-lg">
-                    <i class="fas fa-tachometer-alt"></i> Go to Dashboard
-                </a>
-            {% endif %}
-        </div>
+<!-- Hero Section -->
+<div class="hero-section text-white text-center">
+    <div class="hero-content">
+        <h1 class="display-3 fw-bold mb-4">Welcome to Zinara</h1>
+        <p class="lead fs-4 mb-4">Advanced Vehicle License Compliance Monitoring with AI-Powered Predictions</p>
+        <p class="mb-5 fs-5 opacity-90">Leverage machine learning to predict compliance risks and optimize vehicle licensing operations</p>
+        {% if not user.is_authenticated %}
+            <a href="{% url 'core:login' %}" class="btn btn-light btn-lg px-5 py-3 rounded-pill shadow-lg">
+                <i class="fas fa-sign-in-alt me-2"></i> Get Started
+            </a>
+        {% else %}
+            <a href="{% url 'dashboard:overview' %}" class="btn btn-light btn-lg px-5 py-3 rounded-pill shadow-lg">
+                <i class="fas fa-tachometer-alt me-2"></i> Go to Dashboard
+            </a>
+        {% endif %}
     </div>
 </div>
 
-<div class="row">
+<!-- Feature Cards -->
+<div class="row g-4 mb-5">
     <div class="col-md-4">
-        <div class="card h-100">
-            <div class="card-body text-center">
-                <i class="fas fa-car fa-3x text-primary mb-3"></i>
-                <h5 class="card-title">Vehicle Management</h5>
-                <p class="card-text">Comprehensive vehicle registration and licensing information management</p>
+        <div class="card h-100 feature-card border-0 shadow-sm">
+            <div class="card-body text-center p-4">
+                <div class="feature-icon">
+                    <i class="fas fa-car"></i>
+                </div>
+                <h4 class="card-title fw-bold mb-3">Vehicle Management</h4>
+                <p class="card-text text-muted">
+                    Comprehensive vehicle registration and licensing information management system with real-time tracking and updates.
+                </p>
             </div>
         </div>
     </div>
     
     <div class="col-md-4">
-        <div class="card h-100">
-            <div class="card-body text-center">
-                <i class="fas fa-brain fa-3x text-success mb-3"></i>
-                <h5 class="card-title">AI Predictions</h5>
-                <p class="card-text">Machine learning models predict license renewal compliance and identify high-risk vehicles</p>
+        <div class="card h-100 feature-card border-0 shadow-sm">
+            <div class="card-body text-center p-4">
+                <div class="feature-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h4 class="card-title fw-bold mb-3">AI Predictions</h4>
+                <p class="card-text text-muted">
+                    Advanced machine learning models predict license renewal compliance and identify high-risk vehicles before issues occur.
+                </p>
             </div>
         </div>
     </div>
     
     <div class="col-md-4">
-        <div class="card h-100">
-            <div class="card-body text-center">
-                <i class="fas fa-chart-bar fa-3x text-info mb-3"></i>
-                <h5 class="card-title">Analytics & Reporting</h5>
-                <p class="card-text">Real-time analytics and comprehensive reporting for informed decision making</p>
+        <div class="card h-100 feature-card border-0 shadow-sm">
+            <div class="card-body text-center p-4">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h4 class="card-title fw-bold mb-3">Analytics & Reporting</h4>
+                <p class="card-text text-muted">
+                    Real-time analytics and comprehensive reporting with interactive charts for informed decision-making.
+                </p>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Statistics Section -->
 {% if not user.is_authenticated %}
-<div class="row mt-5">
+<div class="row g-4 mb-5">
     <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h5>System Statistics</h5>
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 py-4">
+                <h3 class="text-center fw-bold mb-0">System Statistics</h3>
             </div>
-            <div class="card-body">
-                <div class="row text-center">
+            <div class="card-body p-4">
+                <div class="row g-4 text-center">
                     <div class="col-md-3">
-                        <h2 class="text-primary">{{ total_vehicles|default:0 }}</h2>
-                        <p>Total Vehicles</p>
+                        <div class="stats-card">
+                            <div class="stats-number">{{ total_vehicles|default:0 }}</div>
+                            <p class="text-muted mb-0 fw-semibold">Total Vehicles</p>
+                        </div>
                     </div>
                     <div class="col-md-3">
-                        <h2 class="text-success">{{ licensed_vehicles|default:0 }}</h2>
-                        <p>Licensed Vehicles</p>
+                        <div class="stats-card">
+                            <div class="stats-number text-success">{{ licensed_vehicles|default:0 }}</div>
+                            <p class="text-muted mb-0 fw-semibold">Licensed Vehicles</p>
+                        </div>
                     </div>
                     <div class="col-md-3">
-                        <h2 class="text-warning">{{ unlicensed_vehicles|default:0 }}</h2>
-                        <p>Unlicensed Vehicles</p>
+                        <div class="stats-card">
+                            <div class="stats-number text-warning">{{ unlicensed_vehicles|default:0 }}</div>
+                            <p class="text-muted mb-0 fw-semibold">Unlicensed Vehicles</p>
+                        </div>
                     </div>
                     <div class="col-md-3">
-                        <h2 class="text-info">{{ compliance_rate|default:0 }}%</h2>
-                        <p>Compliance Rate</p>
+                        <div class="stats-card">
+                            <div class="stats-number text-info">{{ compliance_rate|default:0 }}%</div>
+                            <p class="text-muted mb-0 fw-semibold">Compliance Rate</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -85,37 +174,113 @@
 </div>
 {% endif %}
 
-<div class="row mt-5">
+<!-- Key Features Section -->
+<div class="row mb-5">
     <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h5>Key Features</h5>
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 py-4">
+                <h3 class="text-center fw-bold mb-0">Key Features</h3>
             </div>
-            <div class="card-body">
-                <div class="row">
+            <div class="card-body p-4">
+                <div class="row g-4">
                     <div class="col-md-6">
-                        <h6><i class="fas fa-check-circle text-success"></i> Predictive Analytics</h6>
-                        <p>Identify vehicles likely to become unlicensed using advanced ML algorithms</p>
-                        
-                        <h6><i class="fas fa-check-circle text-success"></i> Real-time Monitoring</h6>
-                        <p>Continuous monitoring of license status and renewal patterns</p>
-                        
-                        <h6><i class="fas fa-check-circle text-success"></i> Regional Insights</h6>
-                        <p>Detailed analytics by region, vehicle type, and payment methods</p>
+                        <div class="d-flex mb-4">
+                            <div class="flex-shrink-0">
+                                <div class="feature-icon" style="width: 60px; height: 60px; font-size: 1.8rem;">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h5 class="fw-bold">Predictive Analytics</h5>
+                                <p class="text-muted mb-0">Identify vehicles likely to become unlicensed using advanced ML algorithms with high accuracy predictions.</p>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-md-6">
-                        <h6><i class="fas fa-check-circle text-success"></i> Alert System</h6>
-                        <p>Automated alerts for high-risk vehicles and compliance issues</p>
-                        
-                        <h6><i class="fas fa-check-circle text-success"></i> API Integration</h6>
-                        <p>RESTful API for integration with external systems</p>
-                        
-                        <h6><i class="fas fa-check-circle text-success"></i> Data Security</h6>
-                        <p>Secure data handling with role-based access control</p>
+                        <div class="d-flex mb-4">
+                            <div class="flex-shrink-0">
+                                <div class="feature-icon" style="width: 60px; height: 60px; font-size: 1.8rem;">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h5 class="fw-bold">Alert System</h5>
+                                <p class="text-muted mb-0">Automated alerts for high-risk vehicles and compliance issues with real-time notifications.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex mb-4">
+                            <div class="flex-shrink-0">
+                                <div class="feature-icon" style="width: 60px; height: 60px; font-size: 1.8rem;">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h5 class="fw-bold">Real-time Monitoring</h5>
+                                <p class="text-muted mb-0">Continuous monitoring of license status and renewal patterns with instant updates.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex mb-4">
+                            <div class="flex-shrink-0">
+                                <div class="feature-icon" style="width: 60px; height: 60px; font-size: 1.8rem;">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h5 class="fw-bold">API Integration</h5>
+                                <p class="text-muted mb-0">RESTful API for seamless integration with external systems and third-party applications.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex mb-4">
+                            <div class="flex-shrink-0">
+                                <div class="feature-icon" style="width: 60px; height: 60px; font-size: 1.8rem;">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h5 class="fw-bold">Regional Insights</h5>
+                                <p class="text-muted mb-0">Detailed analytics by region, vehicle type, and payment methods for comprehensive analysis.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex mb-4">
+                            <div class="flex-shrink-0">
+                                <div class="feature-icon" style="width: 60px; height: 60px; font-size: 1.8rem;">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h5 class="fw-bold">Data Security</h5>
+                                <p class="text-muted mb-0">Secure data handling with role-based access control and enterprise-grade encryption.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Call to Action -->
+{% if not user.is_authenticated %}
+<div class="row">
+    <div class="col-12">
+        <div class="card border-0 shadow-lg" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <div class="card-body text-center text-white p-5">
+                <h2 class="fw-bold mb-3">Ready to Get Started?</h2>
+                <p class="lead mb-4">Join thousands of users who trust Zinara for their vehicle licensing needs</p>
+                <a href="{% url 'core:login' %}" class="btn btn-light btn-lg px-5 py-3 rounded-pill shadow-lg">
+                    <i class="fas fa-rocket me-2"></i> Start Now
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
 {% endblock %}

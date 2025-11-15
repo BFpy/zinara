@@ -1,0 +1,217 @@
+{
+  "model_type": "XGBoost",
+  "version": "1.0",
+  "training_date": "2025-11-13T06:35:27.195271",
+  "metrics": {
+    "accuracy": 0.44849785407725323,
+    "precision": 0.2857142857142857,
+    "recall": 0.5068493150684932,
+    "f1_score": 0.3654320987654321,
+    "roc_auc": 0.4613869863013699
+  },
+  "feature_importance": [
+    {
+      "feature": "days_since_renewal_log",
+      "importance": 0.05708320438861847
+    },
+    {
+      "feature": "Number of Vehicles Owned",
+      "importance": 0.05499204993247986
+    },
+    {
+      "feature": "payment_Bank Transfer",
+      "importance": 0.05249066278338432
+    },
+    {
+      "feature": "region_Nan",
+      "importance": 0.05095118656754494
+    },
+    {
+      "feature": "payment_digital_score",
+      "importance": 0.04355945065617561
+    },
+    {
+      "feature": "agent_efficiency",
+      "importance": 0.040743403136730194
+    },
+    {
+      "feature": "vehicle_age_years",
+      "importance": 0.03985095024108887
+    },
+    {
+      "feature": "Predictive Score",
+      "importance": 0.03972398862242699
+    },
+    {
+      "feature": "days_since_renewal",
+      "importance": 0.03952041640877724
+    },
+    {
+      "feature": "Average Renewal Lag Days",
+      "importance": 0.039480894804000854
+    },
+    {
+      "feature": "renewal_month",
+      "importance": 0.03734321519732475
+    },
+    {
+      "feature": "Fine Amount",
+      "importance": 0.036910299211740494
+    },
+    {
+      "feature": "days_since_renewal_sq",
+      "importance": 0.036744825541973114
+    },
+    {
+      "feature": "compliance_score",
+      "importance": 0.03471532464027405
+    },
+    {
+      "feature": "risk_accumulation_score",
+      "importance": 0.03428058326244354
+    },
+    {
+      "feature": "Agent Hours Used",
+      "importance": 0.0340951569378376
+    },
+    {
+      "feature": "Number of Late Renewals in Last 3 Years",
+      "importance": 0.03355729207396507
+    },
+    {
+      "feature": "Days Since Last Renewal",
+      "importance": 0.03323095291852951
+    },
+    {
+      "feature": "fine_amount_normalized",
+      "importance": 0.03280891850590706
+    },
+    {
+      "feature": "renewal_frequency",
+      "importance": 0.03227486461400986
+    },
+    {
+      "feature": "late_renewal_rate",
+      "importance": 0.031120384112000465
+    },
+    {
+      "feature": "late_renewal_days_interaction",
+      "importance": 0.0310820322483778
+    },
+    {
+      "feature": "payment_Mobile Money",
+      "importance": 0.029488280415534973
+    },
+    {
+      "feature": "renewal_month_cos",
+      "importance": 0.029418224468827248
+    },
+    {
+      "feature": "income_Middle",
+      "importance": 0.02091153711080551
+    },
+    {
+      "feature": "payment_region_interaction",
+      "importance": 0.018980395048856735
+    },
+    {
+      "feature": "renewal_month_sin",
+      "importance": 0.016880393028259277
+    },
+    {
+      "feature": "Previous Violations",
+      "importance": 0.009509522467851639
+    },
+    {
+      "feature": "vehicle_type_Minivan",
+      "importance": 0.0072303637862205505
+    },
+    {
+      "feature": "income_High",
+      "importance": 0.0010212301276624203
+    },
+    {
+      "feature": "Month",
+      "importance": 0.0
+    },
+    {
+      "feature": "renewal_quarter",
+      "importance": 0.0
+    },
+    {
+      "feature": "region_risk_score",
+      "importance": 0.0
+    },
+    {
+      "feature": "Quarter",
+      "importance": 0.0
+    },
+    {
+      "feature": "vehicle_type_Motorcycle",
+      "importance": 0.0
+    },
+    {
+      "feature": "vehicle_type_Hatchback",
+      "importance": 0.0
+    },
+    {
+      "feature": "User Feedback Score",
+      "importance": 0.0
+    },
+    {
+      "feature": "vehicle_type_Pickup",
+      "importance": 0.0
+    },
+    {
+      "feature": "vehicle_type_Truck",
+      "importance": 0.0
+    },
+    {
+      "feature": "vehicle_type_Suv",
+      "importance": 0.0
+    },
+    {
+      "feature": "vehicle_type_Sedan",
+      "importance": 0.0
+    },
+    {
+      "feature": "payment_Agent",
+      "importance": 0.0
+    },
+    {
+      "feature": "region_Urban",
+      "importance": 0.0
+    },
+    {
+      "feature": "region_Rural",
+      "importance": 0.0
+    },
+    {
+      "feature": "payment_Cash",
+      "importance": 0.0
+    },
+    {
+      "feature": "payment_Online",
+      "importance": 0.0
+    },
+    {
+      "feature": "income_Low",
+      "importance": 0.0
+    },
+    {
+      "feature": "income_Nan",
+      "importance": 0.0
+    },
+    {
+      "feature": "income_Very High",
+      "importance": 0.0
+    }
+  ],
+  "hyperparameters": {
+    "colsample_bytree": 0.9,
+    "learning_rate": 0.01,
+    "max_depth": 3,
+    "n_estimators": 100,
+    "subsample": 1.0
+  }
+}

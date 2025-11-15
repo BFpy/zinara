@@ -10,4 +10,5 @@ urlpatterns = [
     path('performance/', views.model_performance, name='performance'),
     path('<int:model_id>/', views.model_detail, name='model_detail'),
     path('<int:model_id>/activate/', views.activate_model, name='activate_model'),
+    path('<int:model_id>/delete/', views.delete_model, name='delete_model'),
 ]

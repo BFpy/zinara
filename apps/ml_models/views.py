@@ -26,12 +26,40 @@ def model_list(request):
 def model_detail(request, model_id):
     """Detailed view of a specific model"""
     model = get_object_or_404(MLModel, id=model_id)
-    training_jobs = ModelTrainingJob.objects.filter(model=model)
+    training_jobs = ModelTrainingJob.objects.filter(model=model).order_by('-started_at')
+
+    # Prepare confusion matrix and metrics safely
+    conf_matrix = None
+    if getattr(model, 'confusion_matrix', None):
+        # Expecting dict with 'matrix' key as [[TN, FP], [FN, TP]]
+        if isinstance(model.confusion_matrix, dict):
+            conf_matrix = model.confusion_matrix.get('matrix') or model.confusion_matrix
+        elif isinstance(model.confusion_matrix, list):
+            conf_matrix = model.confusion_matrix
+
+    # Format feature importance for display
+    feature_importance_items = []
+    if model.feature_importance:
+        if isinstance(model.feature_importance, dict):
+            feature_importance_items = sorted(model.feature_importance.items(), key=lambda item: item[1], reverse=True)
+        elif isinstance(model.feature_importance, list):
+            feature_importance_items = model.feature_importance
+
+    metrics_available = any([
+        model.accuracy,
+        model.precision,
+        model.recall,
+        model.f1_score,
+        model.roc_auc,
+    ])
 
     context = {
         'model': model,
         'training_jobs': training_jobs,
-        'feature_importance': model.feature_importance or {},
+        'feature_importance_items': feature_importance_items,
+        'confusion_matrix': conf_matrix,
+        'threshold': getattr(model, 'threshold', None),
+        'metrics_available': metrics_available,
     }
     return render(request, 'ml_models/model_detail.html', context)
 
@@ -84,16 +112,32 @@ def model_performance(request):
 
 @login_required
 def activate_model(request, model_id):
-    """Activate a specific model"""
+    """Activate or deactivate a specific model"""
+    model = get_object_or_404(MLModel, id=model_id)
+
     if request.method == 'POST':
-        # Deactivate all models
-        MLModel.objects.filter(status='active').update(status='inactive')
+        if model.status == 'active':
+            model.status = 'inactive'
+            model.save(update_fields=['status'])
+            messages.info(request, f'Model "{model.name}" deactivated.')
+        else:
+            # Deactivate all other models first
+            MLModel.objects.exclude(id=model_id).filter(status='active').update(status='inactive')
 
-        # Activate selected model
-        model = get_object_or_404(MLModel, id=model_id)
-        model.status = 'active'
-        model.save()
+            model.status = 'active'
+            model.save(update_fields=['status'])
+            messages.success(request, f'Model "{model.name}" activated successfully!')
 
-        messages.success(request, f'Model "{model.name}" activated successfully!')
+    return redirect('ml_models:model_list')
+
+@login_required
+def delete_model(request, model_id):
+    """Delete a specific model"""
+    model = get_object_or_404(MLModel, id=model_id)
+
+    if request.method == 'POST':
+        model_name = model.name
+        model.delete()
+        messages.success(request, f'Model "{model_name}" deleted successfully!')
 
     return redirect('ml_models:model_list')

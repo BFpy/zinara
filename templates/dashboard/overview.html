@@ -2,67 +2,104 @@
 
 {% block title %}Dashboard - Zinara System{% endblock %}
 
+{% block extra_head %}
+<style>
+    /* Fixed size for chart containers - no growing */
+    .equal-card {
+        height: 400px !important;
+        max-height: 400px !important;
+        overflow: hidden;
+    }
+    .chart-container {
+        height: 280px !important;
+        max-height: 280px !important;
+        width: 100%;
+        position: relative;
+        flex-shrink: 0;
+        overflow: hidden;
+    }
+    .equal-card .card-body {
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+    .equal-card canvas {
+        max-height: 280px !important;
+        height: 280px !important;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="row mb-4">
     <div class="col-12">
-        <h2><i class="fas fa-tachometer-alt"></i> Dashboard Overview</h2>
-        <p class="text-muted">Real-time vehicle licensing compliance monitoring</p>
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2><i class="fas fa-tachometer-alt"></i> Dashboard Overview</h2>
+                <p class="text-muted">Real-time vehicle licensing compliance monitoring</p>
+            </div>
+            <div>
+                <a href="{% url 'dashboard:prediction_analysis' %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-chart-line"></i> Run Prediction Analysis
+                </a>
+            </div>
+        </div>
     </div>
 </div>
 
 <!-- Key Metrics -->
-<div class="row mb-4">
-    <div class="col-md-3">
-        <div class="card bg-primary text-white">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h5 class="card-title">{{ total_vehicles }}</h5>
-                        <p class="card-text">Total Vehicles</p>
-                    </div>
-                    <i class="fas fa-car fa-2x"></i>
+<div class="row g-4 mb-4">
+    <div class="col-sm-6 col-xl-3 d-flex">
+        <div class="stat-card text-white w-100 h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <div class="d-flex justify-content-between align-items-center w-100">
+                <div>
+                    <h3 class="mb-2">{{ total_vehicles|default:0 }}</h3>
+                    <p class="mb-0 opacity-90"><i class="fas fa-car me-2"></i>Total Vehicles</p>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-car fa-3x opacity-50"></i>
                 </div>
             </div>
         </div>
     </div>
     
-    <div class="col-md-3">
-        <div class="card bg-success text-white">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h5 class="card-title">{{ licensed_vehicles }}</h5>
-                        <p class="card-text">Licensed</p>
-                    </div>
-                    <i class="fas fa-check-circle fa-2x"></i>
+    <div class="col-sm-6 col-xl-3 d-flex">
+        <div class="stat-card text-white w-100 h-100" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+            <div class="d-flex justify-content-between align-items-center w-100">
+                <div>
+                    <h3 class="mb-2">{{ licensed_vehicles|default:0 }}</h3>
+                    <p class="mb-0 opacity-90"><i class="fas fa-check-circle me-2"></i>Licensed</p>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle fa-3x opacity-50"></i>
                 </div>
             </div>
         </div>
     </div>
     
-    <div class="col-md-3">
-        <div class="card bg-warning text-white">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h5 class="card-title">{{ unlicensed_vehicles }}</h5>
-                        <p class="card-text">Unlicensed</p>
-                    </div>
-                    <i class="fas fa-exclamation-triangle fa-2x"></i>
+    <div class="col-sm-6 col-xl-3 d-flex">
+        <div class="stat-card text-white w-100 h-100" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+            <div class="d-flex justify-content-between align-items-center w-100">
+                <div>
+                    <h3 class="mb-2">{{ unlicensed_vehicles|default:0 }}</h3>
+                    <p class="mb-0 opacity-90"><i class="fas fa-exclamation-triangle me-2"></i>Unlicensed</p>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-exclamation-triangle fa-3x opacity-50"></i>
                 </div>
             </div>
         </div>
     </div>
     
-    <div class="col-md-3">
-        <div class="card bg-danger text-white">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h5 class="card-title">{{ high_risk_vehicles }}</h5>
-                        <p class="card-text">High Risk</p>
-                    </div>
-                    <i class="fas fa-exclamation-circle fa-2x"></i>
+    <div class="col-sm-6 col-xl-3 d-flex">
+        <div class="stat-card text-white w-100 h-100" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+            <div class="d-flex justify-content-between align-items-center w-100">
+                <div>
+                    <h3 class="mb-2">{{ high_risk_vehicles|default:0 }}</h3>
+                    <p class="mb-0 opacity-90"><i class="fas fa-exclamation-circle me-2"></i>High Risk</p>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-exclamation-circle fa-3x opacity-50"></i>
                 </div>
             </div>
         </div>
@@ -70,13 +107,13 @@
 </div>
 
 <!-- Compliance Rate -->
-<div class="row mb-4">
-    <div class="col-md-6">
-        <div class="card">
+<div class="row mb-4 g-4">
+    <div class="col-md-6 d-flex">
+        <div class="card equal-card w-100">
             <div class="card-header">
                 <h5>Compliance Rate</h5>
             </div>
-            <div class="card-body">
+            <div class="card-body d-flex flex-column justify-content-center">
                 <div class="text-center">
                     <div class="progress mb-3" style="height: 30px;">
                         <div class="progress-bar bg-success" role="progressbar" 
@@ -91,8 +128,8 @@
         </div>
     </div>
     
-    <div class="col-md-6">
-        <div class="card">
+    <div class="col-md-6 d-flex">
+        <div class="card equal-card w-100">
             <div class="card-header">
                 <h5>Recent Alerts</h5>
             </div>
@@ -114,25 +151,29 @@
 </div>
 
 <!-- Charts Row -->
-<div class="row mb-4">
-    <div class="col-md-6">
-        <div class="card">
+<div class="row mb-4 g-4">
+    <div class="col-md-6 d-flex">
+        <div class="card equal-card w-100">
             <div class="card-header">
                 <h5>Regional Distribution</h5>
             </div>
             <div class="card-body">
-                <canvas id="regionalChart" width="400" height="300"></canvas>
+                <div class="chart-container">
+                    <canvas id="regionalChart" height="280"></canvas>
+                </div>
             </div>
         </div>
     </div>
     
-    <div class="col-md-6">
-        <div class="card">
+    <div class="col-md-6 d-flex">
+        <div class="card equal-card w-100">
             <div class="card-header">
                 <h5>Vehicle Types</h5>
             </div>
             <div class="card-body">
-                <canvas id="vehicleTypeChart" width="400" height="300"></canvas>
+                <div class="chart-container">
+                    <canvas id="vehicleTypeChart" height="280"></canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -140,8 +181,8 @@
 
 <!-- Recent Predictions -->
 <div class="row">
-    <div class="col-12">
-        <div class="card">
+    <div class="col-12 d-flex">
+        <div class="card equal-card w-100">
             <div class="card-header">
                 <h5>Recent ML Predictions</h5>
             </div>
@@ -192,55 +233,153 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Regional Chart
-    const regionalCtx = document.getElementById('regionalChart').getContext('2d');
-    const regionalData = {{ regional_stats|safe }};
-    
-    new Chart(regionalCtx, {
-        type: 'bar',
-        data: {
-            labels: regionalData.map(item => item.region),
-            datasets: [{
-                label: 'Licensed',
-                data: regionalData.map(item => item.licensed),
-                backgroundColor: 'rgba(40, 167, 69, 0.8)',
-            }, {
-                label: 'Unlicensed',
-                data: regionalData.map(item => item.unlicensed),
-                backgroundColor: 'rgba(220, 53, 69, 0.8)',
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                x: { stacked: true },
-                y: { stacked: true }
-            }
+    const regionalCtx = document.getElementById('regionalChart');
+    if (regionalCtx) {
+        try {
+            const regionalData = JSON.parse('{{ regional_stats|escapejs }}');
+            
+            new Chart(regionalCtx.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: regionalData.map(item => item.region || 'Unknown'),
+                    datasets: [{
+                        label: 'Licensed',
+                        data: regionalData.map(item => item.licensed || 0),
+                        backgroundColor: 'rgba(40, 167, 69, 0.8)',
+                    }, {
+                        label: 'Unlicensed',
+                        data: regionalData.map(item => item.unlicensed || 0),
+                        backgroundColor: 'rgba(220, 53, 69, 0.8)',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    layout: {
+                        padding: {
+                            left: 10,
+                            right: 10,
+                            top: 10,
+                            bottom: 10
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 10,
+                                font: {
+                                    size: 11
+                                },
+                                boxWidth: 12
+                            }
+                        },
+                        tooltip: {
+                            padding: 10,
+                            titleFont: {
+                                size: 12
+                            },
+                            bodyFont: {
+                                size: 11
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { 
+                            stacked: true,
+                            ticks: {
+                                font: {
+                                    size: 10
+                                },
+                                padding: 8
+                            },
+                            grid: {
+                                display: false
+                            },
+                            categoryPercentage: 0.8,
+                            barPercentage: 0.9
+                        },
+                        y: { 
+                            stacked: true,
+                            beginAtZero: true,
+                            ticks: {
+                                font: {
+                                    size: 10
+                                },
+                                padding: 8,
+                                stepSize: 1
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        }
+                    }
+                }
+            });
+        } catch (e) {
+            console.error('Error rendering regional chart:', e);
         }
-    });
+    }
     
     // Vehicle Type Chart
-    const vehicleTypeCtx = document.getElementById('vehicleTypeChart').getContext('2d');
-    const vehicleTypeData = {{ vehicle_type_stats|safe }};
-    
-    new Chart(vehicleTypeCtx, {
-        type: 'doughnut',
-        data: {
-            labels: vehicleTypeData.map(item => item.vehicle_type),
-            datasets: [{
-                data: vehicleTypeData.map(item => item.total),
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.8)',
-                    'rgba(54, 162, 235, 0.8)',
-                    'rgba(255, 205, 86, 0.8)',
-                    'rgba(75, 192, 192, 0.8)',
-                    'rgba(153, 102, 255, 0.8)',
-                ]
-            }]
-        },
-        options: {
-            responsive: true
+    const vehicleTypeCtx = document.getElementById('vehicleTypeChart');
+    if (vehicleTypeCtx) {
+        try {
+            const vehicleTypeData = JSON.parse('{{ vehicle_type_stats|escapejs }}');
+            
+            new Chart(vehicleTypeCtx.getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: vehicleTypeData.map(item => item.vehicle_type || 'Unknown'),
+                    datasets: [{
+                        data: vehicleTypeData.map(item => item.total || 0),
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.8)',
+                            'rgba(54, 162, 235, 0.8)',
+                            'rgba(255, 205, 86, 0.8)',
+                            'rgba(75, 192, 192, 0.8)',
+                            'rgba(153, 102, 255, 0.8)',
+                            'rgba(255, 159, 64, 0.8)',
+                            'rgba(199, 199, 199, 0.8)',
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    layout: {
+                        padding: {
+                            top: 10,
+                            bottom: 10
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 10,
+                                font: {
+                                    size: 11
+                                },
+                                boxWidth: 12
+                            }
+                        },
+                        tooltip: {
+                            padding: 10,
+                            titleFont: {
+                                size: 12
+                            },
+                            bodyFont: {
+                                size: 11
+                            }
+                        }
+                    }
+                }
+            });
+        } catch (e) {
+            console.error('Error rendering vehicle type chart:', e);
         }
-    });
+    }
 });
 </script>
 {% endblock %}

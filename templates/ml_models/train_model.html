@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Train Model - Zinara System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+	<div class="col-md-6">
+		<div class="card">
+			<div class="card-header text-center"><strong>Train New Model</strong></div>
+			<div class="card-body">
+				<form method="post">{% csrf_token %}
+					<div class="mb-3">
+						<label class="form-label">Model Type</label>
+						<select class="form-select" name="model_type">
+							{% for code,label in model_types %}
+								<option value="{{ code }}">{{ label }}</option>
+							{% endfor %}
+						</select>
+					</div>
+					<div class="mb-3">
+						<label class="form-label">Model Name (optional)</label>
+						<input type="text" class="form-control" name="model_name" placeholder="Leave blank to auto-generate">
+					</div>
+					<button class="btn btn-primary w-100" type="submit"><i class="fas fa-play"></i> Start Training</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+

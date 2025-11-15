@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,18 +12,21 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- App Styles -->
+    <link href="{% static 'css/app.css' %}" rel="stylesheet">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}">
     
     {% block extra_head %}{% endblock %}
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand" href="{% url 'core:home' %}">
-                <i class="fas fa-car"></i> Zinara System
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="{% url 'core:home' %}">
+                <i class="fas fa-car me-2"></i>Zinara System
             </a>
             
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             
@@ -31,27 +35,42 @@
                     {% if user.is_authenticated %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'dashboard:overview' %}">
-                                <i class="fas fa-tachometer-alt"></i> Dashboard
+                                <i class="fas fa-tachometer-alt me-1"></i> Dashboard
                             </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="analysisDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-chart-line me-1"></i> Analysis
+                            </a>
+                            <ul class="dropdown-menu shadow-sm" aria-labelledby="analysisDropdown">
+                                <li><a class="dropdown-item" href="{% url 'dashboard:prediction_analysis' %}">
+                                    <i class="fas fa-search me-2"></i> Prediction Analysis
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'dashboard:risk_analysis' %}">
+                                    <i class="fas fa-exclamation-triangle me-2"></i> Risk Analysis
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'dashboard:analytics' %}">
+                                    <i class="fas fa-chart-bar me-2"></i> Analytics
+                                </a></li>
+								<li><hr class="dropdown-divider"></li>
+								<li><a class="dropdown-item" href="{% url 'dashboard:upload_analysis' %}">
+									<i class="fas fa-file-upload me-2"></i> Upload & Analyze
+								</a></li>
+                            </ul>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'dashboard:vehicle_list' %}">
-                                <i class="fas fa-list"></i> Vehicles
+                                <i class="fas fa-list me-1"></i> Vehicles
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'dashboard:analytics' %}">
-                                <i class="fas fa-chart-bar"></i> Analytics
+                            <a class="nav-link" href="{% url 'dashboard:model_explanation' %}">
+                                <i class="fas fa-question-circle me-1"></i> How It Works
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'ml_models:model_list' %}">
-                                <i class="fas fa-brain"></i> ML Models
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'dashboard:alerts' %}">
-                                <i class="fas fa-bell"></i> Alerts
+                                <i class="fas fa-brain me-1"></i> ML Models
                             </a>
                         </li>
                     {% endif %}
@@ -60,19 +79,19 @@
                 <ul class="navbar-nav">
                     {% if user.is_authenticated %}
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                                <i class="fas fa-user"></i> {{ user.username }}
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user-circle me-1"></i> {{ user.username }}
                             </a>
-                            <ul class="dropdown-menu">
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userDropdown">
                                 <li><a class="dropdown-item" href="{% url 'core:logout' %}">
-                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                    <i class="fas fa-sign-out-alt me-2"></i> Logout
                                 </a></li>
                             </ul>
                         </li>
                     {% else %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'core:login' %}">
-                                <i class="fas fa-sign-in-alt"></i> Login
+                                <i class="fas fa-sign-in-alt me-1"></i> Login
                             </a>
                         </li>
                     {% endif %}
@@ -82,23 +101,37 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="container mt-4">
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            {% endfor %}
-        {% endif %}
-        
-        {% block content %}{% endblock %}
+    <main class="flex-grow-1">
+        <div class="container-fluid py-4">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            {% block content %}{% endblock %}
+        </div>
     </main>
 
     <!-- Footer -->
-    <footer class="bg-light text-center text-muted mt-5 py-3">
-        <div class="container">
-            <p>&copy; 2024 Zinara Vehicle Licensing System. All rights reserved.</p>
+    <footer class="footer mt-auto py-3 bg-light border-top">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="mb-0 text-muted">
+                        <i class="fas fa-car me-1"></i>
+                        &copy; 2025 Zinara Vehicle Licensing System. All rights reserved.
+                    </p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <p class="mb-0 text-muted">
+                        <small>Powered by AI & Machine Learning</small>
+                    </p>
+                </div>
+            </div>
         </div>
     </footer>
 
